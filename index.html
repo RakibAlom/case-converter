@@ -38,10 +38,10 @@
     }
   </style>
 </head>
-<body class="min-h-screen bg-gray-100 text-gray-900 transition-colors duration-300 flex flex-col">
+<body class="bg-gray-100 text-gray-900 transition-colors duration-300 flex flex-col h-[100vh]">
 
   <!-- Container for Header and Main Content -->
-  <div class="w-full min-w-0 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900 rounded-sm shadow-md flex-1 flex flex-col">
+  <div class="w-full min-w-0 px-4 sm:px-6 lg:px-8 h-[100vh] bg-gray-50 dark:bg-gray-900 rounded-sm shadow-md flex flex-col">
     <!-- Header -->
     <header class="flex items-center justify-between py-6 w-full">
       <h1 class="text-2xl font-bold text-black dark:text-gray-200">Case Converter Tool</h1>
@@ -53,12 +53,12 @@
     <main class="flex flex-col gap-6 flex-1">
       <!-- Row 1: Mode Buttons -->
       <div id="modeButtons"
-        class="flex flex-wrap gap-2 justify-center sm:justify-start bg-gray-100 dark:bg-gray-700 rounded-sm p-3 shadow-md">
+        class="flex flex-wrap gap-2 justify-center sm:justify-start bg-gray-100 dark:bg-gray-800 rounded-sm p-3 shadow-md">
         <!-- JS will inject buttons -->
       </div>
 
       <!-- Row 2: Input and Output -->
-      <div class="flex flex-col sm:flex-row gap-4 flex-1 min-h-[40vh]">
+      <div class="flex flex-col sm:flex-row gap-4 flex-1 h-auto">
         <textarea id="inputText" placeholder="Enter your text here..." spellcheck="false"
           class="flex-1 resize-none p-4 rounded-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 shadow-md"></textarea>
 
@@ -67,7 +67,7 @@
       </div>
 
       <!-- Row 3: Analysis, Developer Credit, and Buttons -->
-      <div class="flex flex-col lg:flex-row lg:justify-between items-center text-sm font-mono text-gray-600 dark:text-gray-400 mb-6 gap-4">
+      <div class="flex flex-col lg:flex-row lg:justify-between items-center text-sm font-mono text-gray-600 dark:text-gray-400 mb-4 gap-4">
         <div class="space-x-4">
           <span id="wordCount">Words: 0</span>
           <span id="charCount">Characters: 0</span>
@@ -319,7 +319,7 @@
     btn.id = 'btn_' + mode.id;
 
     if (mode.id === currentMode) {
-      btn.classList.add('bg-gray-300', 'text-gray-800', 'dark:bg-gray-300', 'dark:text-gray-800');
+      btn.classList.add('bg-gray-600', 'text-white', 'dark:bg-gray-600', 'dark:text-white');
     }
 
     btn.addEventListener('click', () => {
@@ -335,9 +335,9 @@
     modes.forEach(mode => {
       const btn = document.getElementById('btn_' + mode.id);
       if (mode.id === currentMode) {
-        btn.classList.add('bg-gray-300', 'text-gray-800', 'dark:bg-gray-300', 'dark:text-gray-800');
+        btn.classList.add('bg-gray-600', 'text-white', 'dark:bg-gray-600', 'dark:text-white');
       } else {
-        btn.classList.remove('bg-gray-300', 'text-gray-800', 'dark:bg-gray-300', 'dark:text-gray-800');
+        btn.classList.remove('bg-gray-600', 'text-white', 'dark:bg-gray-600', 'dark:text-white');
         btn.classList.add('bg-gray-500', 'text-white', 'dark:bg-gray-500', 'dark:text-white');
       }
     });
@@ -373,10 +373,11 @@
       document.querySelector('.w-full').classList.add('dark:bg-gray-900');
       document.querySelector('h1').classList.remove('text-black');
       document.querySelector('h1').classList.add('dark:text-gray-200');
+      document.getElementById('modeButtons').classList.remove('bg-gray-100');
+      document.getElementById('modeButtons').classList.add('dark:bg-gray-800');
       document.documentElement.classList.add('dark');
       document.getElementById('inputText').classList.add('dark:bg-gray-700', 'dark:text-gray-200', 'dark:border-gray-600');
       document.getElementById('outputText').classList.add('dark:bg-gray-600', 'dark:text-gray-200', 'dark:border-gray-600');
-      document.getElementById('modeButtons').classList.add('dark:bg-gray-700');
       document.getElementById('wordCount').classList.add('dark:text-gray-400');
       document.getElementById('charCount').classList.add('dark:text-gray-400');
       document.getElementById('lineCount').classList.add('dark:text-gray-400');
@@ -391,10 +392,11 @@
       document.querySelector('.w-full').classList.add('bg-gray-50');
       document.querySelector('h1').classList.remove('dark:text-gray-200');
       document.querySelector('h1').classList.add('text-black');
+      document.getElementById('modeButtons').classList.remove('dark:bg-gray-800');
+      document.getElementById('modeButtons').classList.add('bg-gray-100');
       document.documentElement.classList.remove('dark');
       document.getElementById('inputText').classList.remove('dark:bg-gray-700', 'dark:text-gray-200', 'dark:border-gray-600');
       document.getElementById('outputText').classList.remove('dark:bg-gray-600', 'dark:text-gray-200', 'dark:border-gray-600');
-      document.getElementById('modeButtons').classList.remove('dark:bg-gray-700');
       document.getElementById('wordCount').classList.remove('dark:text-gray-400');
       document.getElementById('charCount').classList.remove('dark:text-gray-400');
       document.getElementById('lineCount').classList.remove('dark:text-gray-400');
