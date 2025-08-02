@@ -51,19 +51,19 @@
     </header>
 
     <main class="flex flex-col gap-6 flex-1">
-      <!-- Row 1: Mode Buttons -->
+      <!-- Row 1: Mode Buttons and Settings -->
       <div id="modeButtons"
         class="flex flex-wrap gap-2 justify-center sm:justify-start bg-gray-100 dark:bg-gray-800 rounded-sm p-3 shadow-md">
         <!-- JS will inject buttons -->
       </div>
 
       <!-- Row 2: Input and Output -->
-      <div class="flex flex-col sm:flex-row gap-4 flex-1 h-auto">
+      <div id="textareaContainer" class="flex flex-col sm:flex-row gap-4 flex-1">
         <textarea id="inputText" placeholder="Enter your text here..." spellcheck="false"
-          class="flex-1 resize-none p-4 rounded-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 shadow-md"></textarea>
+          class="flex-1 resize-y min-h-[150px] p-4 rounded-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 shadow-md"></textarea>
 
         <textarea id="outputText" readonly spellcheck="false"
-          class="flex-1 resize-none p-4 rounded-sm border border-gray-300 bg-gray-100 text-gray-900 dark:bg-gray-600 dark:text-gray-200 dark:border-gray-600 shadow-md"></textarea>
+          class="flex-1 resize-y min-h-[150px] p-4 rounded-sm border border-gray-300 bg-gray-100 text-gray-900 dark:bg-gray-600 dark:text-gray-200 dark:border-gray-600 shadow-md"></textarea>
       </div>
 
       <!-- Row 3: Analysis, Developer Credit, and Buttons -->
@@ -304,43 +304,73 @@
     {id: 'morse_encode', label: 'Morse Encode'},
     {id: 'rot13', label: 'ROT13'},
     {id: 'hex_encode', label: 'Hex Encode'},
-    {id: 'hex_decode', label: 'Hex Decode'}
+    {id: 'hex_decode', label: 'Hex Decode'},
+    {id: 'layout_column', label: 'Column'},
+    {id: 'layout_row', label: 'Row'}
   ];
 
   // Setup the buttons dynamically
   const modeButtonsDiv = document.getElementById('modeButtons');
   let currentMode = 'lowercase'; // default
+  let currentLayout = localStorage.getItem('layoutMode') || 'column'; // default to column
 
   modes.forEach(mode => {
-    const btn = document.createElement('button');
+    const btn = document.createElement(mode.id.startsWith('layout_') ? 'button' : 'button');
     btn.type = 'button';
     btn.textContent = mode.label;
     btn.className = 'px-2 py-0.5 text-sm rounded-sm border border-gray-500 bg-gray-500 text-white hover:bg-gray-400 dark:bg-gray-500 dark:text-white dark:hover:bg-gray-400 dark:border-gray-600 transition shadow-md text-left';
     btn.id = 'btn_' + mode.id;
 
-    if (mode.id === currentMode) {
+    if (mode.id === currentMode || (mode.id === 'layout_column' && currentLayout === 'column') || (mode.id === 'layout_row' && currentLayout === 'row')) {
       btn.classList.add('bg-gray-600', 'text-white', 'dark:bg-gray-600', 'dark:text-white');
     }
 
     btn.addEventListener('click', () => {
-      currentMode = mode.id;
-      updateButtons();
-      updateOutput();
+      if (mode.id.startsWith('layout_')) {
+        currentLayout = mode.id === 'layout_column' ? 'column' : 'row';
+        updateLayout();
+      } else {
+        currentMode = mode.id;
+        updateButtons();
+        updateOutput();
+      }
     });
 
     modeButtonsDiv.appendChild(btn);
   });
 
+  // Add Buy Me a Coffee link
+  const coffeeLink = document.createElement('a');
+  coffeeLink.href = 'https://buymeacoffee.com/rakibalom';
+  coffeeLink.target = '_blank';
+  coffeeLink.textContent = 'Buy Me a Coffee ☕';
+  coffeeLink.className = 'px-2 py-0.5 text-sm rounded-sm border border-yellow-500 bg-yellow-500 text-white hover:bg-yellow-400 dark:bg-yellow-500 dark:text-white dark:hover:bg-yellow-400 dark:border-yellow-600 transition shadow-md text-left';
+  modeButtonsDiv.appendChild(coffeeLink);
+
   function updateButtons() {
     modes.forEach(mode => {
       const btn = document.getElementById('btn_' + mode.id);
-      if (mode.id === currentMode) {
+      if (mode.id === currentMode || (mode.id === 'layout_column' && currentLayout === 'column') || (mode.id === 'layout_row' && currentLayout === 'row')) {
         btn.classList.add('bg-gray-600', 'text-white', 'dark:bg-gray-600', 'dark:text-white');
       } else {
         btn.classList.remove('bg-gray-600', 'text-white', 'dark:bg-gray-600', 'dark:text-white');
         btn.classList.add('bg-gray-500', 'text-white', 'dark:bg-gray-500', 'dark:text-white');
       }
     });
+  }
+
+  // Update layout
+  const textareaContainer = document.getElementById('textareaContainer');
+  function updateLayout() {
+    if (currentLayout === 'column') {
+      textareaContainer.classList.remove('flex', 'flex-col', 'gap-4', 'flex-1');
+      textareaContainer.classList.add('flex', 'flex-col', 'sm:flex-row', 'gap-4', 'flex-1');
+    } else {
+      textareaContainer.classList.remove('flex', 'flex-col', 'sm:flex-row', 'gap-4', 'flex-1');
+      textareaContainer.classList.add('flex', 'flex-col', 'gap-4', 'flex-1');
+    }
+    localStorage.setItem('layoutMode', currentLayout);
+    updateButtons();
   }
 
   // Update output based on input and current mode
@@ -418,6 +448,9 @@
   } else {
     setThemeMode(false);
   }
+
+  // Initialize layout
+  updateLayout();
 
   // Event listeners for input changes
   document.getElementById('inputText').addEventListener('input', updateOutput);
