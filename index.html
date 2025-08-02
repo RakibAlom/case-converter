@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Case Converter Tool - Rakib Alom</title>
+
+  <!-- SEO Meta -->
+  <meta name="description" content="Powerful case and text converter tool with various transformations including case styles, encoding, ascii art, and more." />
+  <meta name="keywords" content="text converter, case converter, uppercase, lowercase, slug case, camel case, encoding, ascii art, morse code, base64, python, tailwindcss" />
+  <meta name="author" content="Rakib Alom" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Social -->
+  <meta property="og:title" content="Case Converter Tool - Rakib Alom" />
+  <meta property="og:description" content="Powerful case and text converter tool with various transformations including case styles, encoding, ascii art, and more." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Case Converter Tool - Rakib Alom" />
+  <meta name="twitter:description" content="Powerful case and text converter tool with various transformations including case styles, encoding, ascii art, morse code, base64, python, tailwindcss" />
+
+  <link rel="icon" href="/static/favicon.ico" type="image/x-icon" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    textarea::-webkit-scrollbar {
+      width: 6px;
+    }
+    textarea::-webkit-scrollbar-thumb {
+      background-color: rgba(100, 100, 100, 0.3);
+      border-radius: 3px;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+    * {
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-100 text-gray-900 transition-colors duration-300 flex flex-col">
+
+  <!-- Container for Header and Main Content -->
+  <div class="w-full max-w-screen-2xl mx-4 sm:mx-6 lg:mx-8 my-8 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900 rounded-sm shadow-md flex-1 flex flex-col">
+    <!-- Header -->
+    <header class="flex items-center justify-between py-6 w-full">
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-200">Case Converter Tool</h1>
+      <button id="darkModeToggle"
+        class="bg-gray-200 dark:bg-gray-700 rounded-sm p-2 hover:bg-gray-300 dark:hover:bg-gray-600 transition shadow-md text-left"
+        aria-label="Toggle dark mode">🌙</button>
+    </header>
+
+    <main class="flex flex-col gap-6 flex-1">
+      <!-- Row 1: Mode Buttons -->
+      <div id="modeButtons"
+        class="flex flex-wrap gap-2 justify-center sm:justify-start bg-gray-100 dark:bg-gray-700 rounded-sm p-3 shadow-md">
+        <!-- JS will inject buttons -->
+      </div>
+
+      <!-- Row 2: Input and Output -->
+      <div class="flex flex-col sm:flex-row gap-4 flex-1 min-h-[40vh]">
+        <textarea id="inputText" placeholder="Enter your text here..." spellcheck="false"
+          class="flex-1 resize-none p-4 rounded-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 shadow-md"></textarea>
+
+        <textarea id="outputText" readonly spellcheck="false"
+          class="flex-1 resize-none p-4 rounded-sm border border-gray-300 bg-gray-100 text-gray-900 dark:bg-gray-600 dark:text-gray-200 dark:border-gray-600 shadow-md"></textarea>
+      </div>
+
+      <!-- Row 3: Analysis, Developer Credit, and Buttons -->
+      <div class="flex flex-col lg:flex-row lg:justify-between items-center text-sm font-mono text-gray-600 dark:text-gray-400 mb-6 gap-4">
+        <div class="space-x-4">
+          <span id="wordCount">Words: 0</span>
+          <span id="charCount">Characters: 0</span>
+          <span id="lineCount">Lines: 0</span>
+        </div>
+        <div class="text-center text-xs">
+          Developed by <a href="https://rakibalom.com/" target="_blank" class="text-gray-600 hover:underline dark:text-gray-400">Rakib Alom</a>
+        </div>
+        <div class="flex gap-2">
+          <button id="clearBtn"
+            class="border border-red-500 text-red-600 px-4 py-1 rounded-sm hover:bg-red-500 hover:text-white transition shadow-md text-left">Clear</button>
+          <button id="copyBtn"
+            class="border border-green-600 text-green-700 px-6 py-1 rounded-sm hover:bg-green-600 hover:text-white transition shadow-md text-left">Copy Output</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+<script>
+  // All your converter functions in JS
+  
+  function lowercase(text) {
+    return text.toLowerCase();
+  }
+
+  function uppercase(text) {
+    return text.toUpperCase();
+  }
+
+  function slug(text) {
+    return text.toLowerCase()
+      .replace(/[^\w\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-');
+  }
+
+  function title_case(text) {
+    return text.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+  }
+
+  function sentence_case(text) {
+    return text.toLowerCase().replace(/(^\s*\w|[.!?]\s*\w)/g, c => c.toUpperCase());
+  }
+
+  function toggle_case(text) {
+    return [...text].map(c => c === c.toLowerCase() ? c.toUpperCase() : c.toLowerCase()).join('');
+  }
+
+  function camel_case(text) {
+    let words = text.replace(/[^a-zA-Z0-9]+/g, ' ').trim().split(/\s+/);
+    if (words.length === 0) return '';
+    return words[0].toLowerCase() + words.slice(1).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
+  }
+
+  function pascal_case(text) {
+    let words = text.replace(/[^a-zA-Z0-9]+/g, ' ').trim().split(/\s+/);
+    return words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
+  }
+
+  function snake_case(text) {
+    return text.toLowerCase()
+      .replace(/[^\w\s]/g, '')
+      .trim()
+      .replace(/\s+/g, '_');
+  }
+
+  function kebab_case(text) {
+    return text.toLowerCase()
+      .replace(/[^\w\s]/g, '')
+      .trim()
+      .replace(/\s+/g, '-');
+  }
+
+  function dot_case(text) {
+    return text.toLowerCase()
+      .replace(/[^\w\s]/g, '')
+      .trim()
+      .replace(/\s+/g, '.');
+  }
+
+  function leetspeak(text) {
+    const map = { a:'4', e:'3', i:'1', o:'0', s:'5', t:'+' };
+    return text.toLowerCase().split('').map(c => map[c] || c).join('');
+  }
+
+  function upside_down(text) {
+    const map = {
+      a:'ɐ', b:'q', c:'ɔ', d:'p', e:'ǝ', f:'ɟ', g:'ƃ', h:'ɥ', i:'ᴉ', j:'ɾ', k:'ʞ', l:'ʅ', m:'ɯ',
+      n:'u', o:'o', p:'d', q:'b', r:'ɹ', s:'s', t:'ʇ', u:'n', v:'ʌ', w:'ʍ', x:'x', y:'ʎ', z:'z',
+      A:'∀', B:'𐐒', C:'Ɔ', D:'ᗡ', E:'Ǝ', F:'Ⅎ', G:'⅁', H:'H', I:'I', J:'ſ', K:'ʞ', L:'⅂', M:'W',
+      N:'N', O:'O', P:'Ԁ', Q:'Ὁ', R:'ᴚ', S:'S', T:'⊥', U:'∩', V:'Λ', W:'M', X:'X', Y:'⅄', Z:'Z',
+      '1':'⇂', '2':'⇂', '3':'ᄅ', '4':'Ɛ', '5':'ㄣ', '6':'ϛ', '7':'9', '8':'ㄥ', '9':'86', '0':'0'
+    };
+    return [...text].map(c => map[c] || c).reverse().join('');
+  }
+
+  function bubble_text(text) {
+    const map = {
+      a: 'ⓐ', b: 'ⓑ', c: 'ⓒ', d: 'ⓓ', e: 'ⓔ', f: 'ⓕ', g: 'ⓖ',
+      h: 'ⓗ', i: 'ⓘ', j: 'ⓙ', k: 'ⓚ', l: 'ⓛ', m: 'ⓜ', n: 'ⓝ',
+      o: 'ⓞ', p: 'ⓟ', q: 'ⓠ', r: 'ⓡ', s: 'ⓢ', t: 'ⓣ', u: 'ⓤ',
+      v: 'ⓥ', w: 'ⓦ', x: 'ⓧ', y: 'ⓨ', z: 'ⓩ',
+      A: 'Ⓐ', B: 'Ⓑ', C: 'Ⓒ', D: 'Ⓓ', E: 'Ⓔ', F: 'Ⓕ', G: 'Ⓖ',
+      H: 'Ⓗ', I: 'Ⓘ', J: 'Ⓙ', K: 'Ⓚ', L: 'Ⓛ', M: 'Ⓜ', N: 'Ⓝ',
+      O: 'Ⓞ', P: 'Ⓟ', Q: 'Ⓠ', R: 'Ⓡ', S: 'Ⓢ', T: 'Ⓣ', U: 'Ⓤ',
+      V: 'Ⓥ', W: 'Ⓦ', X: 'Ⓧ', Y: 'Ⓨ', Z: 'Ⓩ',
+      '0': '⓪', '1': '①', '2': '②', '3': '③', '4': '④',
+      '5': '⑤', '6': '⑥', '7': '⑦', '8': '⑧', '9': '⑨'
+    };
+    return [...text].map(c => map[c] || c).join('');
+  }
+
+  // Base64 encode and decode using btoa and atob, with UTF-8 handling
+  function base64_encode(text) {
+    try {
+      return btoa(unescape(encodeURIComponent(text)));
+    } catch {
+      return 'Invalid input for Base64 encoding';
+    }
+  }
+
+  function base64_decode(text) {
+    try {
+      return decodeURIComponent(escape(atob(text)));
+    } catch {
+      return 'Invalid Base64 string';
+    }
+  }
+
+  // Morse code encoder
+  function morse_encode(text) {
+    const morse_dict = {
+      'a':'.-', 'b':'-...', 'c':'-.-.', 'd':'-..', 'e':'.',
+      'f':'..-.', 'g':'--.', 'h':'....', 'i':'..', 'j':'.---',
+      'k':'-.-', 'l':'.-..', 'm':'--', 'n':'-.', 'o':'---',
+      'p':'.--.', 'q':'--.-', 'r':'.-.', 's':'...', 't':'-',
+      'u':'..-', 'v':'...-', 'w':'.--', 'x':'-..-', 'y':'-.--',
+      'z':'--..', '0':'-----', '1':'.----', '2':'..---',
+      '3':'...--', '4':'....-', '5':'.....', '6':'-....',
+      '7':'--...', '8':'---..', '9':'----.', ' ':'/'
+    };
+    return text.toLowerCase().split('').map(c => morse_dict[c] || '').join(' ');
+  }
+
+  // Simple ROT13 cipher
+  function rot13(text) {
+    return text.replace(/[a-zA-Z]/g, function(c){
+      return String.fromCharCode(
+        (c <= "Z" ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26
+      );
+    });
+  }
+
+  // Hex encode
+  function hex_encode(text) {
+    return Array.from(text).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join(' ');
+  }
+
+  // Hex decode
+  function hex_decode(text) {
+    try {
+      return text.split(' ').map(h => String.fromCharCode(parseInt(h,16))).join('');
+    } catch {
+      return 'Invalid hex input';
+    }
+  }
+
+  // Clipboard copy function
+  async function copyToClipboard(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      const copyBtn = document.getElementById('copyBtn');
+      copyBtn.textContent = 'Copied';
+      copyBtn.classList.add('bg-green-600', 'text-white');
+      setTimeout(() => {
+        copyBtn.textContent = 'Copy Output';
+        copyBtn.classList.remove('bg-green-600', 'text-white');
+      }, 2000);
+    } catch {
+      console.error('Failed to copy.');
+    }
+  }
+
+  // Text stats
+  function analyzeText(text) {
+    const words = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+    const chars = text.length;
+    const lines = text.split(/\r\n|\r|\n/).length;
+    return {words, chars, lines};
+  }
+
+  // Conversion functions dictionary
+  const converters = {
+    'lowercase': lowercase,
+    'uppercase': uppercase,
+    'slug': slug,
+    'title_case': title_case,
+    'sentence_case': sentence_case,
+    'toggle_case': toggle_case,
+    'camel_case': camel_case,
+    'pascal_case': pascal_case,
+    'snake_case': snake_case,
+    'kebab_case': kebab_case,
+    'dot_case': dot_case,
+    'leetspeak': leetspeak,
+    'upside_down': upside_down,
+    'bubble_text': bubble_text,
+    'base64_encode': base64_encode,
+    'base64_decode': base64_decode,
+    'morse_encode': morse_encode,
+    'rot13': rot13,
+    'hex_encode': hex_encode,
+    'hex_decode': hex_decode
+  };
+
+  // Mode buttons to show
+  const modes = [
+    {id: 'lowercase', label: 'lowercase'},
+    {id: 'uppercase', label: 'UPPERCASE'},
+    {id: 'slug', label: 'slug-case'},
+    {id: 'title_case', label: 'Title Case'},
+    {id: 'sentence_case', label: 'Sentence case'},
+    {id: 'toggle_case', label: 'tOgGlE cAsE'},
+    {id: 'camel_case', label: 'camelCase'},
+    {id: 'pascal_case', label: 'PascalCase'},
+    {id: 'snake_case', label: 'snake_case'},
+    {id: 'kebab_case', label: 'kebab-case'},
+    {id: 'dot_case', label: 'dot.case'},
+    {id: 'leetspeak', label: '13375p34k'},
+    {id: 'upside_down', label: 'nʍop ǝpᴉsʇdn'},
+    {id: 'bubble_text', label: 'Ⓑⓤⓑⓑⓛⓔ Ⓣⓔⓧⓣ'},
+    {id: 'base64_encode', label: 'Base64 Encode'},
+    {id: 'base64_decode', label: 'Base64 Decode'},
+    {id: 'morse_encode', label: 'Morse Encode'},
+    {id: 'rot13', label: 'ROT13'},
+    {id: 'hex_encode', label: 'Hex Encode'},
+    {id: 'hex_decode', label: 'Hex Decode'}
+  ];
+
+  // Setup the buttons dynamically
+  const modeButtonsDiv = document.getElementById('modeButtons');
+  let currentMode = 'lowercase'; // default
+
+  modes.forEach(mode => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = mode.label;
+    btn.className = 'px-2 py-0.5 text-sm rounded-sm border border-gray-500 bg-gray-500 text-white hover:bg-gray-400 dark:bg-gray-500 dark:text-white dark:hover:bg-gray-400 dark:border-gray-600 transition shadow-md text-left';
+    btn.id = 'btn_' + mode.id;
+
+    if (mode.id === currentMode) {
+      btn.classList.add('bg-gray-300', 'text-gray-800', 'dark:bg-gray-300', 'dark:text-gray-800');
+    }
+
+    btn.addEventListener('click', () => {
+      currentMode = mode.id;
+      updateButtons();
+      updateOutput();
+    });
+
+    modeButtonsDiv.appendChild(btn);
+  });
+
+  function updateButtons() {
+    modes.forEach(mode => {
+      const btn = document.getElementById('btn_' + mode.id);
+      if (mode.id === currentMode) {
+        btn.classList.add('bg-gray-300', 'text-gray-800', 'dark:bg-gray-300', 'dark:text-gray-800');
+      } else {
+        btn.classList.remove('bg-gray-300', 'text-gray-800', 'dark:bg-gray-300', 'dark:text-gray-800');
+        btn.classList.add('bg-gray-500', 'text-white', 'dark:bg-gray-500', 'dark:text-white');
+      }
+    });
+  }
+
+  // Update output based on input and current mode
+  function updateOutput() {
+    const input = document.getElementById('inputText').value;
+    const outputArea = document.getElementById('outputText');
+    if (converters[currentMode]) {
+      outputArea.value = converters[currentMode](input);
+    } else {
+      outputArea.value = input;
+    }
+    updateStats(input);
+  }
+
+  // Update text statistics
+  function updateStats(text) {
+    const stats = analyzeText(text);
+    document.getElementById('wordCount').textContent = `Words: ${stats.words}`;
+    document.getElementById('charCount').textContent = `Characters: ${stats.chars}`;
+    document.getElementById('lineCount').textContent = `Lines: ${stats.lines}`;
+  }
+
+  // Theme mode toggle
+  const darkModeToggle = document.getElementById('darkModeToggle');
+  function setThemeMode(isDark) {
+    if (isDark) {
+      document.body.classList.remove('bg-gray-100');
+      document.body.classList.add('bg-gray-800');
+      document.querySelector('.w-full').classList.remove('bg-gray-50');
+      document.querySelector('.w-full').classList.add('dark:bg-gray-900');
+      document.documentElement.classList.add('dark');
+      document.getElementById('inputText').classList.add('dark:bg-gray-700', 'dark:text-gray-200', 'dark:border-gray-600');
+      document.getElementById('outputText').classList.add('dark:bg-gray-600', 'dark:text-gray-200', 'dark:border-gray-600');
+      document.getElementById('modeButtons').classList.add('dark:bg-gray-700');
+      document.getElementById('wordCount').classList.add('dark:text-gray-400');
+      document.getElementById('charCount').classList.add('dark:text-gray-400');
+      document.getElementById('lineCount').classList.add('dark:text-gray-400');
+      darkModeToggle.textContent = '☀️';
+      darkModeToggle.classList.add('dark:bg-gray-700', 'dark:hover:bg-gray-600');
+      darkModeToggle.classList.remove('bg-gray-200', 'hover:bg-gray-300');
+      localStorage.setItem('themeMode', 'dark');
+    } else {
+      document.body.classList.remove('bg-gray-800');
+      document.body.classList.add('bg-gray-100');
+      document.querySelector('.w-full').classList.remove('dark:bg-gray-900');
+      document.querySelector('.w-full').classList.add('bg-gray-50');
+      document.documentElement.classList.remove('dark');
+      document.getElementById('inputText').classList.remove('dark:bg-gray-700', 'dark:text-gray-200', 'dark:border-gray-600');
+      document.getElementById('outputText').classList.remove('dark:bg-gray-600', 'dark:text-gray-200', 'dark:border-gray-600');
+      document.getElementById('modeButtons').classList.remove('dark:bg-gray-700');
+      document.getElementById('wordCount').classList.remove('dark:text-gray-400');
+      document.getElementById('charCount').classList.remove('dark:text-gray-400');
+      document.getElementById('lineCount').classList.remove('dark:text-gray-400');
+      darkModeToggle.textContent = '🌙';
+      darkModeToggle.classList.remove('dark:bg-gray-700', 'dark:hover:bg-gray-600');
+      darkModeToggle.classList.add('bg-gray-200', 'hover:bg-gray-300');
+      localStorage.setItem('themeMode', 'light');
+    }
+  }
+
+  darkModeToggle.addEventListener('click', () => {
+    const isDark = localStorage.getItem('themeMode') === 'dark';
+    setThemeMode(!isDark);
+  });
+
+  // Initialize theme mode to light by default
+  if (localStorage.getItem('themeMode') === 'dark') {
+    setThemeMode(true);
+  } else {
+    setThemeMode(false);
+  }
+
+  // Event listeners for input changes
+  document.getElementById('inputText').addEventListener('input', updateOutput);
+
+  // Clear button
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    document.getElementById('inputText').value = '';
+    document.getElementById('outputText').value = '';
+    updateStats('');
+  });
+
+  // Copy button
+  document.getElementById('copyBtn').addEventListener('click', () => {
+    copyToClipboard(document.getElementById('outputText').value);
+  });
+
+  // Initial update on page load
+  updateOutput();
+</script>
+
+</body>
+</html>
